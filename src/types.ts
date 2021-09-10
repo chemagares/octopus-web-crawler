@@ -17,11 +17,19 @@ export interface RequestItem {
   id: string;
   url: string;
   status: RequestStatus;
-  from?: string;
+  from: string;
 }
 
 export interface UrlProperties {
   protocol?: string;
   base?: string;
   domain?: string;
+}
+
+export interface ScrapperOptions {
+  url: string;
+  maxRequest?: number;
+  delay?: number;
+  callback?: Function;
+  finishCallback?: Function;
 }
