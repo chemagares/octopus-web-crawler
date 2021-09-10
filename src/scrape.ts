@@ -2,6 +2,7 @@ import {
   RequestActions,
   RequestItem,
   RequestStatus,
+  ScrapperOptions,
   UpdateRequestPayload,
 } from "./types";
 import {
@@ -10,71 +11,92 @@ import {
   filterAlreadyAdded,
   filterExternalLinks,
   getBaseUrl,
-  getLinks,
+  getUrlsFromHtml,
+  removeLastSlashCharacter,
   removeWhiteSpaces,
-  save,
 } from "./utils";
 
 const iconv = require("iconv-lite");
 
 export class Scrapper {
-  MAIN_URL: string;
-  BASE_URL: string;
-  DOMAIN: string;
-  MAX_REQUEST: number;
-  DELAY: number;
+  /**
+   * Base url.
+   */
+  baseUrl: string;
 
+  /**
+   * Main url domain.
+   */
+  domain: string;
+
+  /**
+   * Max allowed requests.
+   */
+  maxRequests: number = 100;
+
+  /**
+   * Delay.
+   */
+  delay: number = 100;
+
+  /**
+   * Callback.
+   */
   callback: Function;
-  finishCb: Function;
 
-  REQUESTS: Array<RequestItem> = [];
+  /**
+   * Finish callback.
+   */
+  finishCallback: Function;
 
-  start: number;
+  /**
+   * Requests array.
+   */
+  requests: Array<RequestItem> = [];
 
-  constructor(
-    url: string,
-    maxRequest?: number,
-    delay?: number,
-    callback?: Function,
-    finishCb?: Function
-  ) {
-    this.DELAY = delay || 100;
-    this.MAX_REQUEST = maxRequest || 100;
-    this.MAIN_URL = url.match(/\/$/) ? url.slice(0, -1) : url;
+  /**
+   * Time crawling started.
+   */
+  start: number = new Date().getTime();
 
+  constructor(opts: ScrapperOptions) {
+    let { url, delay, maxRequest, callback, finishCallback } = opts;
+
+    url = removeLastSlashCharacter(url);
+
+    this.delay = delay;
+    this.maxRequests = maxRequest;
     this.callback = callback;
-    this.finishCb = finishCb;
+    this.finishCallback = finishCallback;
 
-    this.start = new Date().getTime();
+    const props = getBaseUrl(url);
 
-    const props = getBaseUrl(this.MAIN_URL);
-
-    if (props.base && props.domain) {
-      this.BASE_URL = props.base;
-      this.DOMAIN = props.domain;
-      const r = createRequestItem(this.MAIN_URL);
-      this.REQUESTS.push(r);
-
-      this.next();
-    } else {
-      console.log("The url provided is not valid");
+    if (props.base === null || props.domain === null) {
+      throw new Error("The url provided is not valid");
     }
+
+    this.baseUrl = props.base;
+    this.domain = props.domain;
+    const r = createRequestItem(url);
+    this.requests.push(r);
+
+    this.next();
   }
 
   next = (): void => {
-    const todo = this.REQUESTS.filter(
+    const todo = this.requests.filter(
       (i) => i.status === RequestStatus.PENDING
     );
 
     if (todo.length === 0) {
       console.log("All items have been processed.");
       console.log(
-        `Made ${this.REQUESTS.length} request in ${
+        `Made ${this.requests.length} request in ${
           (new Date().getTime() - this.start) / 1000
         } seconds.`
       );
 
-      if (this.finishCb) this.finishCb();
+      if (this.finishCallback) this.finishCallback();
 
       return;
     }
@@ -83,7 +105,7 @@ export class Scrapper {
   };
 
   processItem = (item: RequestItem) => {
-    console.table(this.REQUESTS);
+    console.table(this.requests);
     // console.log(`Processing ${item.url}`);
     const req: Promise<any> = createRequest(item.url);
     req
@@ -98,9 +120,9 @@ export class Scrapper {
           status: RequestStatus.DONE,
         });
 
-        if (this.REQUESTS.length >= this.MAX_REQUEST) return;
+        if (this.requests.length >= this.maxRequests) return;
 
-        this.addNewLinks(item, data);
+        this.addUrls(item, data);
       })
       .catch(() => {
         this.updateRequest(item, RequestActions.UPDATE_STATUS, {
@@ -108,29 +130,39 @@ export class Scrapper {
         });
       })
       .finally(() => {
-        setTimeout(() => this.next(), this.DELAY);
+        setTimeout(() => this.next(), this.delay);
       });
   };
 
-  addNewLinks = (item: RequestItem, html: string) => {
-    let links = getLinks(html);
-
+  addUrls = (item: RequestItem, html: string) => {
+    let links = getUrlsFromHtml(html);
     links = [...new Set(links)];
 
-    let news: Array<string> = links.map((l: string) => {
-      const isAbsolute = l.includes("http");
-      l = isAbsolute ? l : l.replace(/^\//g, "");
-      return isAbsolute ? l : `${this.BASE_URL}/${l}`;
-    });
+    // Make urls absolute
+    let news: Array<string> = this.getAbsoluteUrls(links);
 
-    news = filterExternalLinks(news, this.BASE_URL);
+    // Remove external
+    news = filterExternalLinks(news, this.baseUrl);
 
-    news = filterAlreadyAdded(news, this.REQUESTS);
+    // Remove already processed
+    news = filterAlreadyAdded(news, this.requests);
 
+    // Create request items
     const items = news.map((i: string) => createRequestItem(i, item.id));
 
-    const remainingRequest = this.MAX_REQUEST - this.REQUESTS.length;
-    this.REQUESTS = [...this.REQUESTS, ...items.slice(0, remainingRequest)];
+    // Count remaining requests
+    const remaining = this.maxRequests - this.requests.length;
+
+    // Add remaining requests to queqe
+    this.requests = [...this.requests, ...items.slice(0, remaining)];
+  };
+
+  getAbsoluteUrls = (links: Array<string>) => {
+    return links.map((link: string) => {
+      const isAbsolute = link.includes("http");
+      link = isAbsolute ? link : link.replace(/^\//g, "");
+      return isAbsolute ? link : `${this.baseUrl}/${link}`;
+    });
   };
 
   updateRequest = (
@@ -140,17 +172,20 @@ export class Scrapper {
   ) => {
     switch (action) {
       case RequestActions.UPDATE_STATUS:
-        const idx = this.REQUESTS.findIndex((i: any) => i.id === item.id);
+        const idx = this.findRequestIndex(item);
 
-        if (idx === null || idx === undefined) return;
-
-        const obj = {
+        const update = {
           ...item,
           status: payload.status,
         };
 
-        this.REQUESTS[idx] = obj;
+        this.requests[idx] = update;
+
         break;
     }
+  };
+
+  findRequestIndex = (req: RequestItem) => {
+    return this.requests.findIndex((i: RequestItem) => i.id === req.id);
   };
 }

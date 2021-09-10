@@ -4,7 +4,7 @@ import {
   filterAlreadyAdded,
   filterExternalLinks,
   getBaseUrl,
-  getLinks,
+  getUrlsFromHtml,
   removeWhiteSpaces,
 } from "./utils";
 
@@ -40,26 +40,28 @@ test("Get base url test", () => {
 });
 
 test("Get valid links", () => {
-  expect(getLinks('<a href="some-relative-path.htm">')).toEqual([
+  expect(getUrlsFromHtml('<a href="some-relative-path.htm">')).toEqual([
     "some-relative-path.htm",
   ]);
 
-  expect(getLinks('<a href="some-relative-path/deep.htm">')).toEqual([
+  expect(getUrlsFromHtml('<a href="some-relative-path/deep.htm">')).toEqual([
     "some-relative-path/deep.htm",
   ]);
 
-  expect(getLinks('<a href="some-relative-path/deep.htm">')).toEqual([
+  expect(getUrlsFromHtml('<a href="some-relative-path/deep.htm">')).toEqual([
     "some-relative-path/deep.htm",
   ]);
 
   expect(
-    getLinks('<a href="https://mail.google.com/some-relative-path/deep.htm">')
+    getUrlsFromHtml(
+      '<a href="https://mail.google.com/some-relative-path/deep.htm">'
+    )
   ).toEqual(["https://mail.google.com/some-relative-path/deep.htm"]);
 
-  expect(getLinks('<a href="#">')).toEqual([]);
-  expect(getLinks('<link href="some.css">')).toEqual([]);
-  expect(getLinks('<link href="some.png">')).toEqual([]);
-  expect(getLinks('<link href="some.ico">')).toEqual([]);
+  expect(getUrlsFromHtml('<a href="#">')).toEqual([]);
+  expect(getUrlsFromHtml('<link href="some.css">')).toEqual([]);
+  expect(getUrlsFromHtml('<link href="some.png">')).toEqual([]);
+  expect(getUrlsFromHtml('<link href="some.ico">')).toEqual([]);
 });
 
 test("Filter external links", () => {
@@ -108,16 +110,19 @@ test("Filter already processed", () => {
           id: "bhdc1wn9m8i",
           url: "https://www.poesi.as/Felipe_Benitez_Reyes.htm",
           status: RequestStatus.PENDING,
+          from: null,
         },
         {
           id: "87jq37uw04d",
           url: "https://www.poesi.as/Gonzalo_de_Berceo.htm",
           status: RequestStatus.PENDING,
+          from: null,
         },
         {
           id: "1kx8hcpolb3",
           url: "https://www.poesi.as/Jose_Bergamin.htm",
           status: RequestStatus.PENDING,
+          from: null,
         },
       ]
     )

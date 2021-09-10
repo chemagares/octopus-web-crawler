@@ -23,7 +23,7 @@ export const filterAlreadyAdded = (
   return urls.filter((n) => !processed.some((r) => r.url === n));
 };
 
-export const getLinks = (html: string) => {
+export const getUrlsFromHtml = (html: string) => {
   // get links
   const regex = new RegExp(/href="([^"]*)"/, "g");
   let matches: any = Array.from(html.matchAll(regex));
@@ -72,6 +72,8 @@ export const getBaseUrl = (url: string): UrlProperties => {
 
   res = {
     protocol,
+    base: null,
+    domain: null,
   };
 
   if (protocol === null) return res;
@@ -87,4 +89,8 @@ export const getBaseUrl = (url: string): UrlProperties => {
   };
 
   return res;
+};
+
+export const removeLastSlashCharacter = (str: string) => {
+  return str.match(/\/$/) ? str.slice(0, -1) : str;
 };
