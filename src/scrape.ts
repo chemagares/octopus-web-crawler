@@ -1,6 +1,7 @@
 import {
   RequestActions,
   RequestItem,
+  RequestResult,
   RequestStatus,
   ScrapperOptions,
   UpdateRequestPayload,
@@ -15,10 +16,11 @@ import {
   removeLastSlashCharacter,
   removeWhiteSpaces,
 } from "./utils";
+const EventEmitter = require("events");
 
 const iconv = require("iconv-lite");
 
-export class Scrapper {
+export class Scrapper extends EventEmitter {
   /**
    * Base url.
    */
@@ -40,16 +42,6 @@ export class Scrapper {
   delay: number = 100;
 
   /**
-   * Callback.
-   */
-  callback: Function;
-
-  /**
-   * Finish callback.
-   */
-  finishCallback: Function;
-
-  /**
    * Requests array.
    */
   requests: Array<RequestItem> = [];
@@ -60,14 +52,14 @@ export class Scrapper {
   start: number = new Date().getTime();
 
   constructor(opts: ScrapperOptions) {
-    let { url, delay, maxRequest, callback, finishCallback } = opts;
+    super();
+
+    let { url, delay, maxRequest } = opts;
 
     url = removeLastSlashCharacter(url);
 
     this.delay = delay;
     this.maxRequests = maxRequest;
-    this.callback = callback;
-    this.finishCallback = finishCallback;
 
     const props = getBaseUrl(url);
 
@@ -96,7 +88,7 @@ export class Scrapper {
         } seconds.`
       );
 
-      if (this.finishCallback) this.finishCallback();
+      this.emit("finish", { requests: this.requests });
 
       return;
     }
@@ -105,14 +97,19 @@ export class Scrapper {
   };
 
   processItem = (item: RequestItem) => {
-    console.table(this.requests);
+    // console.table(this.requests);
     // console.log(`Processing ${item.url}`);
     const req: Promise<any> = createRequest(item.url);
     req
       .then((data: string) => {
         data = iconv.decode(data, "win1252");
 
-        if (this.callback) this.callback(data);
+        const res: RequestResult = {
+          url: item.url,
+          content: data,
+        };
+
+        this.emit("request", res);
 
         data = removeWhiteSpaces(data);
 

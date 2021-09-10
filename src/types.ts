@@ -30,6 +30,9 @@ export interface ScrapperOptions {
   url: string;
   maxRequest?: number;
   delay?: number;
-  callback?: Function;
-  finishCallback?: Function;
+}
+
+export interface RequestResult {
+  url: string;
+  content: string;
 }
