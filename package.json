@@ -1,0 +1,51 @@
+{
+  "name": "node-crawler",
+  "version": "0.0.1",
+  "description": "Web crawler made with NodeJS",
+  "main": "server.js",
+  "author": "",
+  "scripts": {
+    "compile": "tsc",
+    "compile:watch": "tsc -w",
+    "test": "jest --maxWorkers=2"
+  },
+  "dependencies": {
+    "args": "^5.0.1",
+    "cheerio": "latest",
+    "express": "latest",
+    "fetch": "^1.1.0",
+    "file-type": "^15.0.1",
+    "http-parser-js": "^0.5.2",
+    "iconv-lite": "^0.6.2",
+    "lz-string": "^1.4.4",
+    "node-fetch": "^2.6.1",
+    "request": "latest",
+    "rxjs": "^6.6.3",
+    "socket.io": "^4.2.0",
+    "ts-jest": "^27.0.5"
+  },
+  "devDependencies": {
+    "@types/jest": "^27.0.1",
+    "@types/node": "^16.7.13",
+    "typescript": "^4.4.2"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "modulePaths": [
+      "src/"
+    ],
+    "testPathIgnorePatterns": [
+      "viewer/"
+    ],
+    "coveragePathIgnorePatterns": [
+      "/node_modules/"
+    ],
+    "preset": "ts-jest",
+    "transform": {
+      "node_modules/variables/.+\\.(j|t)sx?$": "ts-jest"
+    },
+    "transformIgnorePatterns": [
+      "node_modules/(?!variables/.*)"
+    ]
+  }
+}
