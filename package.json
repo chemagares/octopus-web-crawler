@@ -1,9 +1,16 @@
 {
   "name": "node-crawler",
-  "version": "0.0.1",
-  "description": "Web crawler made with NodeJS",
-  "main": "server.js",
-  "author": "",
+  "version": "1.0.0",
+  "description": "Simple NodeJS web crawler.",
+  "main": "./dist/index.js",
+  "author": "chemagares",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chemagares/node-crawler"
+  },
   "scripts": {
     "compile": "tsc",
     "compile:watch": "tsc -w",
