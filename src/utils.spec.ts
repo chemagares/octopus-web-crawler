@@ -1,4 +1,4 @@
-import { RequestStatus } from "./types";
+import { Status } from "./types";
 import {
   createRequestItem,
   filterAlreadyAdded,
@@ -93,7 +93,7 @@ test("Create request item", () => {
     createRequestItem("https://www.some-domain.com").id.length
   ).toBeGreaterThan(0);
   expect(createRequestItem("https://www.some-domain.com").status).toEqual(
-    RequestStatus.PENDING
+    Status.PENDING
   );
 });
 
@@ -109,19 +109,19 @@ test("Filter already processed", () => {
         {
           id: "bhdc1wn9m8i",
           url: "https://www.poesi.as/Felipe_Benitez_Reyes.htm",
-          status: RequestStatus.PENDING,
+          status: Status.PENDING,
           from: null,
         },
         {
           id: "87jq37uw04d",
           url: "https://www.poesi.as/Gonzalo_de_Berceo.htm",
-          status: RequestStatus.PENDING,
+          status: Status.PENDING,
           from: null,
         },
         {
           id: "1kx8hcpolb3",
           url: "https://www.poesi.as/Jose_Bergamin.htm",
-          status: RequestStatus.PENDING,
+          status: Status.PENDING,
           from: null,
         },
       ]
