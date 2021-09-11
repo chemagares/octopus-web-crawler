@@ -7,8 +7,24 @@
   "author": "chemacodes",
   "repository": {
     "type": "git",
-    "url": "https://github.com/chemagares/node-crawler"
+    "url": "https://github.com/chemagares/octopus-web-crawler"
   },
+  "bugs": {
+    "url": "https://github.com/chemagares/octopus-web-crawler/issues",
+    "email": "chemagares@gmail.com"
+  },
+  "keywords": [
+    "node",
+    "nodejs",
+    "web",
+    "html",
+    "spider",
+    "crawler",
+    "web-crawler",
+    "scrapper",
+    "data",
+    "mining"
+  ],
   "scripts": {
     "compile": "tsc",
     "compile:watch": "tsc -w",
