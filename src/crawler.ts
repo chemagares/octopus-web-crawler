@@ -19,7 +19,7 @@ const EventEmitter = require("events");
 const http = require("http");
 const https = require("https");
 
-export class Crawler extends EventEmitter {
+class Crawler extends EventEmitter {
   /**
    * Base url.
    */
@@ -236,3 +236,5 @@ export class Crawler extends EventEmitter {
     return this.requests.findIndex((i: RequestItem) => i.id === req.id);
   };
 }
+
+module.exports = Crawler;

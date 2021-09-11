@@ -1,18 +1,9 @@
 {
   "name": "octopus-web-crawler",
   "version": "1.0.1",
-  "description": "Simple NodeJS web crawler.",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "author": "chemacodes",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/chemagares/octopus-web-crawler"
-  },
-  "bugs": {
-    "url": "https://github.com/chemagares/octopus-web-crawler/issues",
-    "email": "chemagares@gmail.com"
-  },
+  "description": "Another web crawler.",
+  "author": "Chema Garcia <chemagares@gmail.com>",
+  "license": "MIT",
   "keywords": [
     "node",
     "nodejs",
@@ -25,6 +16,16 @@
     "data",
     "mining"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chemagares/octopus-web-crawler"
+  },
+  "bugs": {
+    "url": "https://github.com/chemagares/octopus-web-crawler/issues",
+    "email": "chemagares@gmail.com"
+  },
+  "main": "dist/crawler.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "compile": "tsc",
     "compile:watch": "tsc -w",
