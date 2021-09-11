@@ -1,8 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.removeLastSlashCharacter = exports.getBaseUrl = exports.createRequestItem = exports.createRequest = exports.filterExternalLinks = exports.getUrlsFromHtml = exports.filterAlreadyAdded = exports.removeWhiteSpaces = exports.save = void 0;
+exports.removeLastSlashCharacter = exports.getBaseUrl = exports.createRequestItem = exports.filterExternalLinks = exports.getUrlsFromHtml = exports.filterAlreadyAdded = exports.removeWhiteSpaces = exports.save = void 0;
 const types_1 = require("./types");
-const nodeFetch = require("node-fetch");
 var fs = require("fs");
 const save = (name, data) => {
     let moment = new Date().toISOString().substring(0, 19);
@@ -40,15 +39,11 @@ const filterExternalLinks = (urls, url) => {
     });
 };
 exports.filterExternalLinks = filterExternalLinks;
-const createRequest = (url) => {
-    return nodeFetch(url, { method: "get" }).then((res) => res.buffer());
-};
-exports.createRequest = createRequest;
 const createRequestItem = (url, from) => {
     return {
         id: Math.random().toString(36).slice(2),
         url,
-        status: types_1.RequestStatus.PENDING,
+        status: types_1.Status.PENDING,
         from: from ? from : null,
     };
 };

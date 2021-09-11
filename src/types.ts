@@ -1,12 +1,12 @@
-export enum RequestActions {
+export enum Actions {
   UPDATE_STATUS = "UPDATE_STATUS",
 }
 
 export interface UpdateRequestPayload {
-  status: RequestStatus;
+  status: Status;
 }
 
-export enum RequestStatus {
+export enum Status {
   PENDING = "PENDING",
   PROCESSING = "PROCESSING",
   FAILED = "FAILED",
@@ -16,7 +16,7 @@ export enum RequestStatus {
 export interface RequestItem {
   id: string;
   url: string;
-  status: RequestStatus;
+  status: Status;
   from: string;
 }
 
@@ -30,6 +30,7 @@ export interface ScrapperOptions {
   url: string;
   maxRequest?: number;
   delay?: number;
+  concurrency?: number;
 }
 
 export interface RequestResult {
