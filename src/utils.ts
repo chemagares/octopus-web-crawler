@@ -1,5 +1,4 @@
-import { RequestItem, RequestStatus, UrlProperties } from "./types";
-const nodeFetch = require("node-fetch");
+import { RequestItem, Status, UrlProperties } from "./types";
 var fs = require("fs");
 
 export const save = (name: any, data: any) => {
@@ -49,15 +48,11 @@ export const filterExternalLinks = (urls: Array<string>, url: string) => {
   });
 };
 
-export const createRequest = (url: string) => {
-  return nodeFetch(url, { method: "get" }).then((res: any) => res.buffer());
-};
-
 export const createRequestItem = (url: string, from?: string): RequestItem => {
   return {
     id: Math.random().toString(36).slice(2),
     url,
-    status: RequestStatus.PENDING,
+    status: Status.PENDING,
     from: from ? from : null,
   };
 };
