@@ -16,7 +16,6 @@ import {
   removeWhiteSpaces,
 } from "./utils";
 const EventEmitter = require("events");
-
 const http = require("http");
 const https = require("https");
 

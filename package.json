@@ -1,12 +1,10 @@
 {
-  "name": "node-crawler",
+  "name": "octopus-web-crawler",
   "version": "1.0.0",
   "description": "Simple NodeJS web crawler.",
-  "main": "./dist/index.js",
-  "author": "chemagares",
-  "publishConfig": {
-    "access": "public"
-  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "author": "chemacodes",
   "repository": {
     "type": "git",
     "url": "https://github.com/chemagares/node-crawler"
@@ -16,25 +14,21 @@
     "compile:watch": "tsc -w",
     "test": "jest"
   },
-  "dependencies": {
-    "args": "^5.0.1",
-    "node-fetch": "^2.6.1",
-    "ts-jest": "^27.0.5"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@types/jest": "^27.0.1",
     "@types/node": "^16.7.13",
     "jest": "^27.1.1",
+    "ts-jest": "^27.0.5",
     "typescript": "^4.4.2"
   },
+  "prepublish": "tsc",
   "jest": {
     "testEnvironment": "node",
     "modulePaths": [
       "src/"
     ],
-    "testPathIgnorePatterns": [
-      "viewer/"
-    ],
+    "testPathIgnorePatterns": [],
     "coveragePathIgnorePatterns": [
       "/node_modules/"
     ],
