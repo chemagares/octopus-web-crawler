@@ -1,10 +1,10 @@
 {
-  "name": "node-crawler",
+  "name": "octopus-web-crawler",
   "version": "1.0.0",
   "description": "Simple NodeJS web crawler.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "author": "chemagares",
+  "author": "chemacodes",
   "repository": {
     "type": "git",
     "url": "https://github.com/chemagares/node-crawler"
