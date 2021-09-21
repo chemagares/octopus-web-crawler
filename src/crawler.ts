@@ -52,7 +52,7 @@ class Crawler extends EventEmitter {
 
   concurrency = 4;
 
-  finished: boolean = false;
+  finishEventEmmited: boolean = false;
 
   constructor(opts: ScrapperOptions) {
     super();
@@ -97,18 +97,13 @@ class Crawler extends EventEmitter {
       this.processItem(item);
     });
 
-    if (done.length === this.requests.length && !this.finished) {
-      this.finished = true;
-      // console.log("All items have been processed.");
-      // console.log(
-      //   `Made ${this.requests.length} request in ${
-      //     (new Date().getTime() - this.start) / 1000
-      //   } seconds.`
-      // );
-
+    if (
+      todo.length === 0 &&
+      processing.length === 0 &&
+      !this.finishEventEmmited
+    ) {
+      this.finishEventEmmited = true;
       this.emit("finish", { requests: this.requests });
-
-      return;
     }
   };
 
@@ -149,7 +144,7 @@ class Crawler extends EventEmitter {
 
       this.changeProtocol(current, newProtocol);
       this.next();
-    } else if (statusCode == 200) {
+    } else if (statusCode === 200) {
       res.setEncoding("utf8");
 
       res.on("data", (data: any) => (result.content += data));
@@ -167,7 +162,6 @@ class Crawler extends EventEmitter {
 
         this.emit("request", result);
       }
-
       setTimeout(() => this.next(), this.delay);
     });
   }
