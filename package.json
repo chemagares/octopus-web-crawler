@@ -1,6 +1,6 @@
 {
   "name": "octopus-web-crawler",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Another web crawler.",
   "author": "Chema Garcia <chemagares@gmail.com>",
   "license": "MIT",
