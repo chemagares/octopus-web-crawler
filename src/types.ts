@@ -31,9 +31,11 @@ export interface ScrapperOptions {
   maxRequest?: number;
   delay?: number;
   concurrency?: number;
+  buffer?: boolean;
 }
 
 export interface RequestResult {
   url: string;
-  content: string;
+  content: any;
+  buffer: Buffer;
 }

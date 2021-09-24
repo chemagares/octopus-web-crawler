@@ -54,6 +54,8 @@ class Crawler extends EventEmitter {
 
   finishEventEmmited: boolean = false;
 
+  buffer: boolean;
+
   constructor(opts: ScrapperOptions) {
     super();
 
@@ -73,6 +75,7 @@ class Crawler extends EventEmitter {
 
     this.baseUrl = props.base;
     this.domain = props.domain;
+    this.buffer = opts.buffer;
     const r = createRequestItem(url);
     this.requests.push(r);
 
@@ -129,7 +132,10 @@ class Crawler extends EventEmitter {
     const result: RequestResult = {
       url: item.url,
       content: "",
+      buffer: null,
     };
+
+    const chunks: any = [];
 
     if (statusCode !== 301 && statusCode !== 200) {
       this.updateRequest(item, Actions.UPDATE_STATUS, {
@@ -145,20 +151,25 @@ class Crawler extends EventEmitter {
       this.changeProtocol(current, newProtocol);
       this.next();
     } else if (statusCode === 200) {
-      res.setEncoding("utf8");
-
-      res.on("data", (data: any) => (result.content += data));
+      res.on("data", (data: any) => {
+        result.content += data;
+        chunks.push(Buffer.from(data, "binary"));
+      });
     }
 
     res.on("end", () => {
       if (result.content !== "") {
+        if (this.buffer) {
+          let binary = Buffer.concat(chunks);
+          result.buffer = binary;
+        }
+
+        let data = removeWhiteSpaces(result.content);
+        this.addUrls(item, data);
+
         this.updateRequest(item, Actions.UPDATE_STATUS, {
           status: Status.DONE,
         });
-
-        let data = removeWhiteSpaces(result.content);
-
-        this.addUrls(item, data);
 
         this.emit("request", result);
       }
